@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="pagetitle">
+    <h2>{% block title %}Hasil Klasterisasi{% endblock %}</h2>
+</div><!-- End Page Title -->
+<section class="section">
+  <div class="row align-items-top">
+    <div class="col">
+
+      <!-- Default Card -->
+      <div class="card">
+        <div class="card-body">
+          <img src="data:image/png;base64,{{ encoded_image }}" alt="Grafik">
+          <!-- Tampilkan hasil data klaster di halaman -->
+          <div class="mb-3">
+            <label for="filterLabel">Filter Cluster:</label>
+            <select id="filterLabel" class="form-select">
+                <option value="all">All</option>
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+            </select>
+        </div>
+        
+          {% if cluster_data %}
+        <table id="resultTable" class="table">
+            <thead>
+                <tr>
+                    <th>Provinsi</th>
+                    <th>Bawang Daun</th>
+                    <th>Bawang Merah</th>
+                    <th>Bawang Putih</th>
+                    <th>Bayam</th>
+                    <th>Buncis</th>
+                    <th>Cabai Rawit</th>
+                    <th>Kacang Panjang</th>
+                    <!-- Add more feature columns as needed -->
+                    <th>Cluster Label</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for provinsi, data in cluster_data.items() %}
+                    <tr>
+                        <td>{{ provinsi }}</td>
+                        <td>{{ data['bawang.daun'] }}</td>
+                        <td>{{ data['bawang.merah'] }}</td>
+                        <td>{{ data['bawang.putih'] }}</td>
+                        <td>{{ data['bayam'] }}</td>
+                        <td>{{ data['buncis'] }}</td>
+                        <td>{{ data['cabai.rawit'] }}</td>
+                        <td>{{ data['kacang.panjang'] }}</td>
+                        <!-- Add more feature columns as needed -->
+                        <td>{{ data['klaster'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No cluster data available.</p>
+    {% endif %}
+        </div>
+      </div><!-- End Default Card -->
+      
+    </div>
+  </div>
+</section>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      var filterLabel = document.getElementById('filterLabel');
+      var resultTable = document.getElementById('resultTable');
+
+      filterLabel.addEventListener('change', function () {
+          var selectedLabel = filterLabel.value;
+
+          // Ambil semua baris dalam tabel
+          var rows = resultTable.getElementsByTagName('tr');
+
+          // Semua baris ditampilkan
+          for (var i = 0; i < rows.length; i++) {
+              rows[i].style.display = '';
+          }
+
+          // Jika yang dipilih bukan 'all', sembunyikan baris yang tidak sesuai
+          if (selectedLabel !== 'all') {
+              for (var i = 1; i < rows.length; i++) {
+                  var labelCell = rows[i].lastElementChild; // Ambil sel terakhir (kolom label)
+                  var labelValue = labelCell.textContent.toLowerCase();
+                  
+                  if (labelValue !== selectedLabel) {
+                      rows[i].style.display = 'none';
+                  }
+              }
+          }
+      });
+  });
+</script>
+{% endblock %}
